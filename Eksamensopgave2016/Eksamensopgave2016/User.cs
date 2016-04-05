@@ -8,23 +8,24 @@ namespace Eksamensopgave2016
 {
     public class User : IComparable
     {
-        public static int GlobalUserId;
+        public static int GlobalUserCounter;
         public User(string firstname, string lastname, string email, string username)
         {
             Firstname = firstname;
             Lastname = lastname;
             Email = email;
             Username = username;
-            GlobalUserId++;
-            BalanceChanged += notifyUser;
+            GlobalUserCounter++;
+            LowBalance += NotifyUserAboutLowBalance;
         }
         //Method there notifies user about balance, when event has happened
-        private void notifyUser(User user, decimal balance)
+        private void NotifyUserAboutLowBalance(User user, decimal balance)
         {
             Console.WriteLine($"Dear {user.Username}\nYour balance is under 50!! ({balance})");
         }
 
-        public int UserId { get; } = GlobalUserId;
+        public int UserID { get; } = GlobalUserCounter;
+
         private string _firstname;
         public string Firstname
         {
@@ -71,16 +72,16 @@ namespace Eksamensopgave2016
             set
             {
                 string[] substrings = value.Split('@');
-                Console.WriteLine(value);
                 if (substrings.Length != 2)
                 {
                     _email = null;
                 }
                 else {
-                    _email = "not valid";
+                    _email = null;
                     _localPart = substrings[0];
                     _domain = substrings[1];
                     if (
+                    // Most important checks, to short circuit if the value is invalid according to special chars
                     _domain.Contains(".") &&
                     _domain.Last() != '.' &&
                     _domain.Last() != '-' &&
@@ -90,13 +91,13 @@ namespace Eksamensopgave2016
                     _localPart.Last() != '-' &&
                     _localPart.First() != '.' &&
                     _localPart.First() != '-' &&
+
                     _localPart.All(c =>
                     char.IsLetter(c) ||
                     char.IsNumber(c) ||
                     c == '.' ||
                     c == '-' ||
                     c == '_') &&
-
                     _domain.All(c =>
                     char.IsNumber(c) ||
                     char.IsLetter(c) ||
@@ -108,10 +109,11 @@ namespace Eksamensopgave2016
                 }
             }
         }
-        //Makes event "BalanceChanged" which takes delegate "UserBalanceNotification"
+        //Makes event "LowBalance" which takes delegate "UserBalanceNotification"
         public delegate void UserBalanceNotification(User user, decimal balance);
-        public event UserBalanceNotification BalanceChanged;
+        public event UserBalanceNotification LowBalance;
         private decimal _balance;
+
         public decimal Balance
         {
             get
@@ -124,7 +126,7 @@ namespace Eksamensopgave2016
                 if (Balance < 50)
                 {
                     //Triggers the event, and checks if event is null
-                    BalanceChanged?.Invoke(this, Balance);
+                    LowBalance?.Invoke(this, Balance);
                 }
             }
         }
@@ -134,7 +136,7 @@ namespace Eksamensopgave2016
         }
         public override int GetHashCode()
         {
-            return UserId;
+            return UserID;
         }
         public override bool Equals(object obj)
         {
