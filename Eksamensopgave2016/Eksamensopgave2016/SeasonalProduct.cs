@@ -8,7 +8,7 @@ namespace Eksamensopgave2016
 {
     class SeasonalProduct : Product
     {
-        public SeasonalProduct(string name, decimal price) : base(name, price)
+        public SeasonalProduct(string name, decimal price, int productID) : base(name, price, productID)
         {
         }
         public DateTime SeasonStartDate { get; set; }

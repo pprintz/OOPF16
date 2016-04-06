@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Eksamensopgave2016
 {
-    class InsertCashTransaction : Transaction
+    public class InsertCashTransaction : Transaction
     {
         public InsertCashTransaction(User client, decimal amount) : base(client)
         {

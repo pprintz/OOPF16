@@ -93,14 +93,12 @@ namespace Eksamensopgave2016
                     _localPart.First() != '-' &&
 
                     _localPart.All(c =>
-                    char.IsLetter(c) ||
-                    char.IsNumber(c) ||
+                    char.IsLetterOrDigit(c) ||
                     c == '.' ||
                     c == '-' ||
                     c == '_') &&
                     _domain.All(c =>
-                    char.IsNumber(c) ||
-                    char.IsLetter(c) ||
+                    char.IsLetterOrDigit(c) ||
                     c == '.' ||
                     c == '-'))
                     {

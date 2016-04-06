@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Eksamensopgave2016
 {
-    class BuyTransaction : Transaction
+    public class BuyTransaction : Transaction
     {
         public Product Item { get; set; }
         public decimal ProductPriceAtTransaction { get; set; }
-
         public BuyTransaction(User client, Product item) : base(client)
         {
             Item = item;
             ProductPriceAtTransaction = item.Price;
+            Amount = item.Price;
         }
 
         public override string ToString()
@@ -31,7 +31,7 @@ namespace Eksamensopgave2016
             {
                 throw new InsufficientCreditsException(Client, Item);
             }
-            Client.Balance -= ProductPriceAtTransaction;
+            Client.Balance -= Amount;
         }
     }
 }

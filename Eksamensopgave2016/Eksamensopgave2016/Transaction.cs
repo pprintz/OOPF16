@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Eksamensopgave2016
 {
-    abstract class Transaction
+    public abstract class Transaction
     {
         public static int GlobalTransactionCounter = 1;
         protected Transaction(User client)
@@ -15,9 +15,9 @@ namespace Eksamensopgave2016
             GlobalTransactionCounter++;
             Date = DateTime.Now;
         }
-        public int TransactionID { get; set; }
+        public int TransactionID { get; set; } = GlobalTransactionCounter;
         public User Client { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime Date { get;}
         public decimal Amount { get; set; }
         public override string ToString()
         {

@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace Eksamensopgave2016
 {
-    class Product
+    public class Product  
     {
-        public static int GlobalProductCounter = 1;
-
-        public Product(string name, decimal price)
+        public Product(string name, decimal price, int productID)
         {
             Price = price;
             Name = name;
-            GlobalProductCounter++;
+            ProductID = productID;
         }
-        public int ProductID { get; } = GlobalProductCounter;
+
+        public int ProductID { get; }
 
         private string _name;
         public string Name

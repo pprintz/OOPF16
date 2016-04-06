@@ -49,6 +49,7 @@
     <Compile Include="IStregsystem.cs" />
     <Compile Include="IStregsystemUI.cs" />
     <Compile Include="Product.cs" />
+    <Compile Include="ProductList.cs" />
     <Compile Include="ProductNotActiveException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
