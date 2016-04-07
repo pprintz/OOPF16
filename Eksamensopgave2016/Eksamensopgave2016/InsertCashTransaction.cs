@@ -18,7 +18,7 @@ namespace Eksamensopgave2016
         }
         public override string ToString()
         {
-            return  $"INSERT CASH of {Amount}Kr... New balance ({Client.Balance}Kr)\nTransaction Info: {base.ToString()}";
+            return $"Transaction Info: {base.ToString()}\nINSERT CASH of {Amount}Kr... New balance ({Client.Balance}Kr) ";
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Eksamensopgave2016
 
         public override string ToString()
         {
-            return $"PURCHASE of: {Item.Name} at {ProductPriceAtTransaction}Kr... New balance ({Client.Balance}Kr)\nTransaction Info: {base.ToString()}";
+            return $"Transaction Info: {base.ToString()}\nPURCHASE of: {Item.Name} at {ProductPriceAtTransaction}Kr... New balance ({Client.Balance}Kr)";
         }
         public override void Execute()
         {

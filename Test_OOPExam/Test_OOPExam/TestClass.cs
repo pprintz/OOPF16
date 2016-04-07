@@ -31,6 +31,7 @@ namespace Test_OOPExam
             User test = new User("Peter", "madsen", "asd.@hot.dk", "ppppp");
             Assert.Null(test.Email);
         }
+
         [Test]
         public void TestLocalIfLastIsDash()
         {
@@ -44,18 +45,21 @@ namespace Test_OOPExam
             User test = new User("Peter", "madsen", "asd@-hot.dk", "ppppp");
             Assert.Null(test.Email);
         }
+
         [Test]
         public void TestDomainIfFirstIsDot()
         {
             User test = new User("Peter", "madsen", "asd@.hot.dk", "ppppp");
             Assert.Null(test.Email);
         }
+
         [Test]
         public void TestDomainIfLastIsDash()
         {
             User test = new User("Peter", "madsen", "asd@hot.dk-", "ppppp");
             Assert.Null(test.Email);
         }
+
         [Test]
         public void TestDomainIfLastIsDot()
         {
@@ -65,8 +69,16 @@ namespace Test_OOPExam
         [Test]
         public void TestIfDomainContainsCorrectChars()
         {
-            User test = new User("Peter", "madsen", "asd&@hot.dk.", "ppppp");
+            User test = new User("Peter", "madsen", "asd@hot.dk.", "ppppp");
             Assert.Null(test.Email);
+        }
+
+        [Test]
+        public void TestWhenEmailContainsNoDots()
+        {
+            User test = new User("Peter", "madsen", "asd@hotdk.", "ppppp");
+            Assert.Null(test.Email);
+
         }
     }
 }

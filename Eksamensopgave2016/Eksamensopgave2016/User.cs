@@ -16,12 +16,6 @@ namespace Eksamensopgave2016
             Email = email;
             Username = username;
             GlobalUserCounter++;
-            LowBalance += NotifyUserAboutLowBalance;
-        }
-        //Method there notifies user about balance, when event has happened
-        private void NotifyUserAboutLowBalance(User user, decimal balance)
-        {
-            Console.WriteLine($"Dear {user.Username}\nYour balance is under 50!! ({balance})");
         }
 
         public int UserID { get; } = GlobalUserCounter;
@@ -45,6 +39,14 @@ namespace Eksamensopgave2016
 
         public string Lastname { get; }
 
+        public static bool IsUsernameValid(string username)
+        {
+            if (username.All(c => char.IsLower(c) || char.IsNumber(c) || c == '_'))
+            {
+                return true;
+            }
+            return false;
+        }
         private string _username;
         public string Username
         {
@@ -55,14 +57,48 @@ namespace Eksamensopgave2016
             set
             {
                 _username = "no username";
-                if (value.All(c => char.IsLower(c) || char.IsNumber(c) || c == '_'))
+                if(IsUsernameValid(value))
                 {
                     _username = value;
                 }
             }
         }
 
-        private string _email, _localPart, _domain;
+        public static bool IsEmailValid(string email)
+        {
+            string[] substrings = email.Split('@');
+            if (substrings.Length != 2)
+            {
+                return false;
+            }
+            string _localPart = substrings[0];
+            string _domain = substrings[1];
+            if (
+                // Most important checks, to short circuit if the value is invalid according to special chars
+                _domain.Contains(".") &&
+                _domain.Last() != '.' &&
+                _domain.Last() != '-' &&
+                _domain.First() != '.' &&
+                _domain.First() != '-' &&
+                _localPart.Last() != '.' &&
+                _localPart.Last() != '-' &&
+                _localPart.First() != '.' &&
+                _localPart.First() != '-' &&
+
+                _localPart.All(c =>
+                    char.IsLetterOrDigit(c) ||
+                    c == '.' ||
+                    c == '-' ||
+                    c == '_') &&
+                _domain.All(c =>
+                    char.IsLetterOrDigit(c) ||
+                    c == '.' ||
+                    c == '-'))
+                return true;
+            return false;
+        }
+
+        private string _email;
         public string Email
         {
             get
@@ -71,47 +107,15 @@ namespace Eksamensopgave2016
             }
             set
             {
-                string[] substrings = value.Split('@');
-                if (substrings.Length != 2)
+                if (IsEmailValid(value))
                 {
-                    _email = null;
-                }
-                else {
-                    _email = null;
-                    _localPart = substrings[0];
-                    _domain = substrings[1];
-                    if (
-                    // Most important checks, to short circuit if the value is invalid according to special chars
-                    _domain.Contains(".") &&
-                    _domain.Last() != '.' &&
-                    _domain.Last() != '-' &&
-                    _domain.First() != '.' &&
-                    _domain.First() != '-' &&
-                    _localPart.Last() != '.' &&
-                    _localPart.Last() != '-' &&
-                    _localPart.First() != '.' &&
-                    _localPart.First() != '-' &&
-
-                    _localPart.All(c =>
-                    char.IsLetterOrDigit(c) ||
-                    c == '.' ||
-                    c == '-' ||
-                    c == '_') &&
-                    _domain.All(c =>
-                    char.IsLetterOrDigit(c) ||
-                    c == '.' ||
-                    c == '-'))
-                    {
-                        _email = value;
-                    }
+                    _email = value;
                 }
             }
         }
         //Makes event "LowBalance" which takes delegate "UserBalanceNotification"
-        public delegate void UserBalanceNotification(User user, decimal balance);
-        public event UserBalanceNotification LowBalance;
+        public delegate void UserBalanceNotification(User user, Product product);
         private decimal _balance;
-
         public decimal Balance
         {
             get
@@ -121,11 +125,6 @@ namespace Eksamensopgave2016
             set
             {
                 _balance = value;
-                if (Balance < 50)
-                {
-                    //Triggers the event, and checks if event is null
-                    LowBalance?.Invoke(this, Balance);
-                }
             }
         }
         public override string ToString()
@@ -142,15 +141,7 @@ namespace Eksamensopgave2016
         }
         public int CompareTo(object obj)
         {
-            if (GetHashCode() > obj.GetHashCode())
-            {
-                return -1;
-            }
-            else if (GetHashCode() < obj.GetHashCode())
-            {
-                return 1;
-            }
-            else return 0;
+            return UserID - ((User)obj).UserID;
         }
     }
 }

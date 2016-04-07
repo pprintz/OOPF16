@@ -39,7 +39,7 @@ namespace Eksamensopgave2016
         public bool CanBeBoughtOnCredit { get; set; }
         public override string ToString()
         {
-            return $"{ProductID}  {Name}  {Price}";
+            return $"{ProductID}  {Name}  {Price}Kr";
         }
     }
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,20 +13,29 @@ namespace Eksamensopgave2016
 {
     public class ProductList
     {
-        public List<Product> LoadProducts()
+        public static Dictionary<int, Product> LoadProducts()
         {
             string htmlTags = "<.*?>";
-            List<Product> products = new List<Product>();
-            var reader = new StreamReader(File.OpenRead(Environment.CurrentDirectory + @"/products.csv"));
-            while (!reader.EndOfStream)
+            Dictionary<int, Product> products = new Dictionary<int, Product>();
+            string productsInOneLine = Eksamensopgave2016.Properties.Resources.products;
+            using (StringReader reader = new StringReader(productsInOneLine))
             {
-                List<String> productValues =
-                    Regex.Replace(reader.ReadLine(), htmlTags, string.Empty).Split(';').ToList();
-                if (productValues[1].Contains('"'))
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    products.Add(new Product(productValues[1],
-                        Decimal.Parse(productValues[2]),
-                        Int32.Parse(productValues[0])));
+                    List<String> productValues =
+                       Regex.Replace(reader.ReadLine(), htmlTags, string.Empty).Replace(@"""", string.Empty).Split(';').ToList();
+                    int secondLastDigitIndex = productValues[2].Length - 2;
+                    if (productValues[0] != "id")
+                    {
+                        if (productValues[2].Length > 2)
+                        {
+                            products.Add(Int32.Parse(productValues[0]), new SeasonalProduct(productValues[1],
+                                Decimal.Parse(productValues[2].Insert(secondLastDigitIndex, ",")),
+                                Int32.Parse(productValues[0]))
+                            { Active = Convert.ToBoolean(Int32.Parse(productValues[3])) });
+                        }
+                    }
                 }
             }
             return products;

@@ -2,7 +2,7 @@
 {
     public interface IStregsystemUI
     {
-        /*
+        
         void DisplayUserNotFound(string username);
         void DisplayProductNotFound(string product);
         void DisplayUserInfo(User user);
@@ -13,8 +13,8 @@
         void Close();
         void DisplayInsufficientCash(User user, Product product);
         void DisplayGeneralError(string errorString);
-        event StregsystemEvent CommandEntered; 
-        */
-        void Start();
+        void MakeUser();
+        event Stregsystem.StregsystemEvent CommandEntered; 
+        void Start(StregsystemController controller);
     }
 }
