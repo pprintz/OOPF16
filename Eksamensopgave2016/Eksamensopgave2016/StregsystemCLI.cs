@@ -12,14 +12,29 @@ namespace Eksamensopgave2016
     {
         public StregsystemCLI(Stregsystem stregsystem)
         {
-            this.stregsystem = stregsystem;
+            this._stregsystem = stregsystem;
+            CommandEntered += ParseEnteredCommandAndWriteStuff;
         }
-        private readonly IStregsystem stregsystem = new Stregsystem();
+
+        public void ParseEnteredCommandAndWriteStuff(string commandEntered, StregsystemController controller)
+        {
+            controller.ParseCommand(commandEntered);
+        }
+
+        private readonly IStregsystem _stregsystem;
+        public void ShowAllProducts()
+        {
+            foreach (Product product in _stregsystem.Products.Values)
+            {
+                Console.WriteLine(product);
+            }
+        }
+
         public event Stregsystem.StregsystemEvent CommandEntered;
 
-        private void drawUI()
+        private void ShowActiveProducts()
         {
-            foreach (Product activeProduct in stregsystem.ActiveProducts)
+            foreach (Product activeProduct in _stregsystem.ActiveProducts)
             {
                 Console.WriteLine(activeProduct);
             }
@@ -57,14 +72,14 @@ namespace Eksamensopgave2016
             User newUser = new User(firstName, lastName, email, username);
             StringBuilder sb = new StringBuilder();
             sb.Append($"{firstName},{lastName},{email},{username}{Environment.NewLine}");
-            File.AppendAllText(@"C: \Users\peter\Desktop\OOPF16\Eksamensopgave2016\Eksamensopgave2016\bin\Debug\Resources\Userlist.csv", sb.ToString());
-            stregsystem.Users.Add(newUser);
+            File.AppendAllText(Environment.CurrentDirectory + "/Resources/Userlist.csv", sb.ToString());
+            _stregsystem.Users.Add(newUser);
         }
 
         private bool _running = true;
         public void Start(StregsystemController controller)
         {
-            StreamReader userlistStreamReader = new StreamReader(@"C: \Users\peter\Desktop\OOPF16\Eksamensopgave2016\Eksamensopgave2016\bin\Debug\Resources\Userlist.csv");
+            StreamReader userlistStreamReader = new StreamReader(Environment.CurrentDirectory + @"/Resources/Userlist.csv");
             while (userlistStreamReader.ReadLine() != null)
             {
                 string line = userlistStreamReader.ReadLine();
@@ -72,42 +87,52 @@ namespace Eksamensopgave2016
                 if (subStrings != null)
                 {
                     User user = new User(subStrings[0], subStrings[1], subStrings[2], subStrings[3]);
-                    stregsystem.Users.Add(user);
+                    _stregsystem.Users.Add(user);
                 }
             }
             userlistStreamReader.Close();
-            if (stregsystem.Users.Count == 0)
+            _stregsystem.Users.Add(new User("Peter","Madsen","p-printz@hotmail.com","pprintz") {Balance = 40});
+            if (_stregsystem.Users.Count == 0)
             {
                 Console.WriteLine("There is no users in the database.. Please make an user!\n\n");
                 MakeUser();
             }
             do
             {
-                unmarkCurrentPosition();
-                drawUI();
+                ShowActiveProducts();
                 markCurrentPosition();
-                controller.ParseCommand(Console.ReadLine());
+                string command = Console.ReadLine();
+                CommandEntered?.Invoke(command, controller);
+                controller.ParseCommand(command);
+                unmarkCurrentPosition();
+                Console.ReadKey();
+                Console.Clear();
             } while (_running);
         }
         public StregsystemCLI(IStregsystem stregsystem)
         {
-            this.stregsystem = stregsystem;
+            this._stregsystem = stregsystem;
         }
         public void DisplayUserNotFound(string username)
         {
             Console.WriteLine($"User '{username}' not found!");
         }
-        public void DisplayProductNotFound(string product)
+        public void DisplayProductNotFound(string productID)
         {
-            Console.WriteLine($"The product '{product}' not found");
+            Console.WriteLine($"No product with '{productID}' was found");
         }
         public void DisplayUserInfo(User user)
         {
             Console.WriteLine(user);
         }
+
+        public void DisplayUserMenu(User user)
+        {
+        }
+
         public void DisplayTooManyArgumentsError(string command)
         {
-            Console.WriteLine(@"Too many arguments..");
+            Console.WriteLine(@"Too many arguments... Try with one(Username) or two(Username productID)");
         }
         public void DisplayAdminCommandNotFoundMessage(string adminCommand)
         {
@@ -115,14 +140,17 @@ namespace Eksamensopgave2016
         }
         public void DisplayUserBuysProduct(BuyTransaction transaction)
         {
-            Console.WriteLine($"{transaction.Client} buys {transaction.Item} for {transaction.Item.Price}");
+            Console.WriteLine($"{transaction.Client} buys {transaction.Item.Name} for {transaction.Item.Price}Kr");
         }
         public void DisplayUserBuysProduct(int count, BuyTransaction transaction)
         {
+            Console.WriteLine($"{transaction.Client} buys {transaction.Item}x{count} for {transaction.Item.Price*count}");
         }
         public void Close()
         {
-            _running = false;
+            Console.WriteLine("Closing program...");
+            Console.ReadKey();
+            Environment.Exit(0);
         }
         public void DisplayInsufficientCash(User user, Product product)
         {
@@ -130,7 +158,7 @@ namespace Eksamensopgave2016
         }
         public void DisplayGeneralError(string errorString)
         {
-            Console.WriteLine(@"**ERROR**");
+            Console.WriteLine($"**ERROR** {errorString} **ERROR**");
         }
 
     }

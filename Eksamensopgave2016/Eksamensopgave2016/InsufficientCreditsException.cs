@@ -10,7 +10,7 @@ namespace Eksamensopgave2016
     {
         public InsufficientCreditsException(User client, Product item)
         {
-            Message = $"Dear Mr.{client.Lastname}.. Your balance is too low: {client.Balance}!\n{item.Name}: {item.Price}";
+            Message = $"Dear Mr.{client.Lastname}.. Your balance is too low to buy {item.Name}: {client.Balance}!\n{item.Name}: {item.Price}";
         }
 
         public override string Message { get; }

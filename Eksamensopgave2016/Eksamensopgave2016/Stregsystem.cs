@@ -11,21 +11,24 @@ namespace Eksamensopgave2016
     public class Stregsystem : IStregsystem
     {
         public readonly List<Transaction> Transactions = new List<Transaction>();
-        private readonly Dictionary<int, Product> _products = ProductList.LoadProducts();
+        public List<User> Users { get; set; } = new List<User>();
+        public Dictionary<int, Product> Products { get; } = ProductList.LoadAAUProducts();
+        public IEnumerable<Product> ActiveProducts => Products.Values.Where(p => p.Active);
+        public delegate void StregsystemEvent(string commandEntered, StregsystemController controller);
+        public event User.UserBalanceNotification UserBalanceWarning;
 
         public Stregsystem()
         {
-            UserBalanceWarning += NotifyUserThatBalanceIsLow; 
+            UserBalanceWarning += NotifyUserThatBalanceIsLow;
         }
 
         //Method there notifies user about balance, when event is triggered 
         private void NotifyUserThatBalanceIsLow(User user, Product product)
         {
-            Console.WriteLine($"Dear {user.Firstname}.. your balance is low after buying {product.Name}!\n Balance = {user.Balance+product.Price} - {product.Price} = {user.Balance}");
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Dear {user.Firstname}.. your balance is low after buying {product.Name}!\n Current balance = Balance{user.Balance + product.Price} - Price{product.Price} = {user.Balance}");
+            Console.BackgroundColor = ConsoleColor.White;
         }
-
-        public List<User> Users { get; set; } = new List<User>();
-        public IEnumerable<Product> ActiveProducts => _products.Values.Where(p => p.Active);
 
         public InsertCashTransaction AddCreditsToAccount(User user, decimal amount)
         {
@@ -33,9 +36,6 @@ namespace Eksamensopgave2016
             ExecuteTransaction(transaction);
             return transaction;
         }
-
-        public delegate void StregsystemEvent();
-        public event User.UserBalanceNotification UserBalanceWarning;
 
         public BuyTransaction BuyProduct(User user, Product product)
         {
@@ -58,14 +58,13 @@ namespace Eksamensopgave2016
         public Product GetProductByID(int productID)
         {
             Product item;
-            bool isIDValid = _products.TryGetValue(productID, out item);
+            bool isIDValid = Products.TryGetValue(productID, out item);
             if (!isIDValid)
             {
                 throw new ProductDoesNotExistException(productID);
             }
             return item;
         }
-
         public IEnumerable<Transaction> GetTransactions(User user, int count)
         {
             return Transactions.Where(t => t.Client.Equals(user)).Take(10);
@@ -77,7 +76,9 @@ namespace Eksamensopgave2016
         }
         public User GetUserByUsername(string username)
         {
-            return Users.First(u => u.Username == username);
+            if (Users.Exists(u => u.Username == username))
+                return Users.First(u => u.Username == username);
+            return null;
         }
 
     }

@@ -13,7 +13,7 @@ namespace Eksamensopgave2016
 {
     public class ProductList
     {
-        public static Dictionary<int, Product> LoadProducts()
+        public static Dictionary<int, Product> LoadAAUProducts()
         {
             string htmlTags = "<.*?>";
             Dictionary<int, Product> products = new Dictionary<int, Product>();
@@ -23,8 +23,8 @@ namespace Eksamensopgave2016
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    List<String> productValues =
-                       Regex.Replace(reader.ReadLine(), htmlTags, string.Empty).Replace(@"""", string.Empty).Split(';').ToList();
+                    string[] productValues =
+                       Regex.Replace(line, htmlTags, string.Empty).Replace(@"""", string.Empty).Split(';');
                     int secondLastDigitIndex = productValues[2].Length - 2;
                     if (productValues[0] != "id")
                     {

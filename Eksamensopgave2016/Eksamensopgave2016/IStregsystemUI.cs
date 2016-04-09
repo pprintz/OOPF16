@@ -6,6 +6,7 @@
         void DisplayUserNotFound(string username);
         void DisplayProductNotFound(string product);
         void DisplayUserInfo(User user);
+        void DisplayUserMenu(User user);
         void DisplayTooManyArgumentsError(string command);
         void DisplayAdminCommandNotFoundMessage(string adminCommand);
         void DisplayUserBuysProduct(BuyTransaction transaction);
@@ -14,6 +15,7 @@
         void DisplayInsufficientCash(User user, Product product);
         void DisplayGeneralError(string errorString);
         void MakeUser();
+        void ShowAllProducts();
         event Stregsystem.StregsystemEvent CommandEntered; 
         void Start(StregsystemController controller);
     }

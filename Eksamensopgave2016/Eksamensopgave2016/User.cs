@@ -133,7 +133,7 @@ namespace Eksamensopgave2016
         }
         public override int GetHashCode()
         {
-            return UserID;
+            return 31;
         }
         public override bool Equals(object obj)
         {

@@ -70,9 +70,12 @@
     <Compile Include="StregsystemController.cs" />
     <Compile Include="Transaction.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="UserDoesNotExistException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Userlist.csv" />
+    <Content Include="Resources\Userlist.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="App.config" />
     <Content Include="Resources\products.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
