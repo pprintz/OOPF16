@@ -20,11 +20,11 @@ namespace Eksamensopgave2016
             string productsInOneLine = Eksamensopgave2016.Properties.Resources.products;
             using (StringReader reader = new StringReader(productsInOneLine))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                string lineBuffer;
+                while ((lineBuffer = reader.ReadLine()) != null)
                 {
                     string[] productValues =
-                       Regex.Replace(line, htmlTags, string.Empty).Replace(@"""", string.Empty).Split(';');
+                       Regex.Replace(lineBuffer, htmlTags, string.Empty).Replace(@"""", string.Empty).Split(';');
                     int secondLastDigitIndex = productValues[2].Length - 2;
                     if (productValues[0] != "id")
                     {

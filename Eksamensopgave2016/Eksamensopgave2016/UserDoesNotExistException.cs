@@ -10,6 +10,8 @@ namespace Eksamensopgave2016
     {
         public UserDoesNotExistException(string username)
         {
+            Username = username;
         }
+        public string Username { get; }
     }
 }

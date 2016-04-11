@@ -8,10 +8,11 @@ namespace Eksamensopgave2016
 {
     class ProductDoesNotExistException : Exception
     {
+        public readonly int ProductID;
+
         public ProductDoesNotExistException(int productID)
         {
-            Message = $"There is no product with the ID of: {productID}";
+            ProductID = productID;
         }
-        public override string Message { get; }
     }
 }

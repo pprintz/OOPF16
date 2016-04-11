@@ -13,7 +13,23 @@ namespace Eksamensopgave2016
         }
         public DateTime SeasonStartDate { get; set; }
         public DateTime SeasonEndDate { get; set; }
-        public bool InSeason { get; set; }
+
+        private bool _inSeason;
+        public bool InSeason
+        {
+            get
+            {
+                return _inSeason;
+            }
+            set
+            {
+                if (value)
+                {
+                    SeasonStartDate = DateTime.Now;
+                }
+                _inSeason = value;
+            }
+        }
 
     }
 }

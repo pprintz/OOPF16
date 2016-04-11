@@ -15,11 +15,14 @@ namespace Eksamensopgave2016
             Item = item;
             ProductPriceAtTransaction = item.Price;
             Amount = item.Price;
+            BalanceAfterTransaction = client.Balance - ProductPriceAtTransaction;
         }
+
 
         public override string ToString()
         {
-            return $"Transaction Info: {base.ToString()}\nPURCHASE of: {Item.Name} at {ProductPriceAtTransaction}Kr... New balance ({Client.Balance}Kr)";
+            return $"Transaction Info: {base.ToString()}" +
+                   $"\nPURCHASE of: {Item.Name} at {ProductPriceAtTransaction}Kr... Balance after transaction: {BalanceAfterTransaction}Kr";
         }
         public override void Execute()
         {

@@ -15,9 +15,12 @@ namespace Eksamensopgave2016
             GlobalTransactionCounter++;
             Date = DateTime.Now;
         }
+
+
         public int TransactionID { get; set; } = GlobalTransactionCounter;
         public User Client { get; set; }
-        public DateTime Date { get;}
+        public DateTime Date { get; set; }
+        public decimal BalanceAfterTransaction { get; set; }
         public decimal Amount { get; set; }
         public override string ToString()
         {

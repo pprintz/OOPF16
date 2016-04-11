@@ -10,11 +10,20 @@ namespace Eksamensopgave2016
     {
         public InsufficientCreditsException(User client, Product item)
         {
-            Message = $"Dear Mr.{client.Lastname}.. Your balance is too low to buy {item.Name}: {client.Balance}!\n{item.Name}: {item.Price}";
+            Client = client;
+            Item = item;
+            Message = $"{item.Name} for {item.Price}Kr";
         }
-
+        public InsufficientCreditsException(User client, Product item, int count)
+        {
+            Client = client;
+            Item = item;
+            Count = count;
+            Message = $"{count} x {item.Name} for {item.Price*count}Kr";
+        }
         public override string Message { get; }
-
-
+        public User Client { get; }
+        public Product Item { get; }
+        public int Count { get; }
     }
 }

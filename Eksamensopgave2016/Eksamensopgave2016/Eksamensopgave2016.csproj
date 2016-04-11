@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,18 +69,18 @@
     <Compile Include="Stregsystem.cs" />
     <Compile Include="StregsystemCLI.cs" />
     <Compile Include="StregsystemController.cs" />
+    <Compile Include="TooFewArgumentsForAdminFuncException.cs" />
     <Compile Include="Transaction.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserDoesNotExistException.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Userlist.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Resources\Userlist.csv" />
     <None Include="App.config" />
     <Content Include="Resources\products.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <Content Include="Resources\TransactionLogfile.csv" />
   </ItemGroup>

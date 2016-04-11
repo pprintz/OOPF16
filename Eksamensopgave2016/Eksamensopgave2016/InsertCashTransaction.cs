@@ -11,6 +11,7 @@ namespace Eksamensopgave2016
         public InsertCashTransaction(User client, decimal amount) : base(client)
         {
             Amount = amount;
+            BalanceAfterTransaction = client.Balance + amount;
         }
         public override void Execute()
         {
@@ -18,7 +19,7 @@ namespace Eksamensopgave2016
         }
         public override string ToString()
         {
-            return $"Transaction Info: {base.ToString()}\nINSERT CASH of {Amount}Kr... New balance ({Client.Balance}Kr) ";
+            return $"Transaction Info: {base.ToString()}\nINSERT CASH of {Amount}Kr... New balance ({BalanceAfterTransaction}Kr) ";
         }
     }
 }
