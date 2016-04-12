@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     public class User : IComparable
@@ -33,12 +34,26 @@ namespace Eksamensopgave2016
                 _firstname = value;
                 if (value == null)
                 {
-                    _firstname = "\"Intet navn\"";
+                    _firstname = "..";
                 }
             }
         }
-
-        public string Lastname { get; }
+        private string _lastname;
+        public string Lastname
+        {
+            get
+            {
+                return _lastname;
+            }
+            set
+            {
+                _lastname = value;
+                if (value == null)
+                {
+                    _lastname = "..";
+                }
+            }
+        }
 
 
         private string _username;
@@ -115,7 +130,7 @@ namespace Eksamensopgave2016
             return false;
         }
 
-        //Makes event "LowBalance" which takes delegate "UserBalanceNotification"
+        //Delegate "UserBalanceNotification"
         public delegate void UserBalanceNotification(User user, Product product, int count);
         public decimal Balance { get; set; }
 
@@ -123,19 +138,27 @@ namespace Eksamensopgave2016
         {
             return $"{Firstname} {Lastname} ({Email})";
         }
+
+        //Taken inspiration in Josh Bloch's - Effective Java
+        //Multiplying two primenumbers is more likely to generate a unique hashcode 
         public override int GetHashCode()
         {
             int hash = 7;
-            foreach (char c in UserID.ToString())
-            {
-                hash = hash*31 + c;
-            }
+            int primeNumber = 17;
+            hash = hash*primeNumber + Firstname.GetHashCode();
+            hash = hash*primeNumber + Lastname.GetHashCode();
+            hash = hash*primeNumber + Username.GetHashCode();
             return hash;
         }
 
         public override bool Equals(object obj)
         {
-            return GetHashCode() == obj.GetHashCode();
+            User user = obj as User;
+            if (user == null)
+            {
+                return false;
+            }
+            return GetHashCode() == user.GetHashCode();
         }
         public int CompareTo(object obj)
         {

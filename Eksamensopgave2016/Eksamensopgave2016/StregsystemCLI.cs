@@ -1,25 +1,22 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
 using System.Linq;
 using System.IO;
-using System.Security.Authentication.ExtendedProtection;
 using System.Text;
-
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
-    class StregsystemCLI : IStregsystemUI
+    public class StregsystemCLI : IStregsystemUI
     {
         public StregsystemCLI(IStregsystem stregsystem)
         {
             _stregsystem = stregsystem;
         }
         //
-        public void ParseEnteredCommandAndWriteStuff(string commandEntered, StregsystemController controller)
-        {
-            controller.ParseCommand(commandEntered);
-        }
 
         //First check is if the input derives from Product, if it is then it sets end date of the season to the userinput from standard input
         public void MakeSeasonItemInSeason(Product p)
@@ -27,16 +24,19 @@ namespace Eksamensopgave2016
             if (typeof(Product).IsSubclassOf(typeof(Product)))
             {
                 SeasonalProduct seasonalProduct = p as SeasonalProduct;
-                seasonalProduct.InSeason = true;
-                Console.WriteLine("How many days is this item available for from now?");
-                int days;
-                if (int.TryParse(Console.ReadLine(), out days))
+                if (seasonalProduct != null)
                 {
-                    seasonalProduct.SeasonEndDate = seasonalProduct.SeasonStartDate.AddDays(days);
-                }
-                else
-                {
-                    DisplayGeneralError("Number of days has to be a integer");
+                    seasonalProduct.InSeason = true;
+                    Console.WriteLine("How many days is this item available for from now?");
+                    int days;
+                    if (int.TryParse(Console.ReadLine(), out days))
+                    {
+                        seasonalProduct.SeasonEndDate = seasonalProduct.SeasonStartDate.AddDays(days);
+                    }
+                    else
+                    {
+                        DisplayGeneralError("Number of days has to be a integer");
+                    }
                 }
             }
             else
@@ -45,7 +45,7 @@ namespace Eksamensopgave2016
             }
         }
         private readonly IStregsystem _stregsystem;
-        // Event declaring event
+        // Declaring event
         public event Stregsystem.StregsystemEvent CommandEntered;
         //Method there notifies user about balance, when event(UserBalanceWarning) is raised
         private void NotifyUserThatBalanceIsLow(User user, Product product, int count)
@@ -103,12 +103,19 @@ namespace Eksamensopgave2016
                 Console.Write("Enter an valid email(eX_A-mpl3@123.coM): ");
                 email = Console.ReadLine();
             } while (!User.IsEmailValid(email));
-            string username;
+            string username = null;
             do
             {
+                if (_stregsystem.Users.Exists(u => u.Username == username))
+                {
+                    DisplayGeneralError($"There already exists a user with '{username}' as username");
+                }
                 Console.Write("Enter an valid username(no special chars): ");
                 username = Console.ReadLine();
-            } while (!User.IsUsernameValid(username));
+            } while (!User.IsUsernameValid(username) ||
+                     username.Any(char.IsWhiteSpace) ||
+                     username == string.Empty ||
+                     _stregsystem.Users.Exists(u => u.Username == username));
             User newUser = new User(firstName, lastName, email, username);
             StringBuilder sb = new StringBuilder();
             sb.Append($"{firstName},{lastName},{email},{username}{Environment.NewLine}");
@@ -128,7 +135,10 @@ namespace Eksamensopgave2016
                 _stregsystem.Users.Add(user);
 
             }
-            User.GlobalUserCounter = _stregsystem.Users.Max(u => u.UserID);
+            if (_stregsystem.Users.Count > 0)
+            {
+                User.GlobalUserCounter = _stregsystem.Users.Max(u => u.UserID);
+            }
             userlistStreamReader.Close();
         }
         //Reads TransactionLogfile.csv and adds them to transaction list.
@@ -207,23 +217,27 @@ namespace Eksamensopgave2016
 
         private void LoadUsersAndTransactionsAndSetBalanceAndSubscribeToCommandEntered()
         {
-            CommandEntered += ParseEnteredCommandAndWriteStuff;
             _stregsystem.UserBalanceWarning += NotifyUserThatBalanceIsLow;
             LoadUsers();
-            _stregsystem.Transactions = LoadTransactions().ToList();
+            //Wont load transactions if there is no users, there is a user behind every transaction.
+            if (_stregsystem.Users.Count != 0)
+            {
+                _stregsystem.Transactions = LoadTransactions().ToList();
+            }
             SetBalanceOfUsers();
-            firstTime = false;
+            _firstTime = false;
         }
-        static bool firstTime = true;
+
+        static bool _firstTime = true;
         // When start is called, users and transactions are loaded from csv file.
         // Users last known balance are found by looking at their latest transaction
         // Start calls MakeUser() if there is no users.
         // The do while loop is the CLI, it shows all the active products, and reads a line from standard input stream.
         // The 'CommandEntered' event is raised, and then runs the function "ParseEnteredCommand.." which is subscribed.
         private bool _running = true;
-        public void Start(StregsystemController controller)
+        public void Start()
         {
-            if (firstTime)
+            if (_firstTime)
             {
                 LoadUsersAndTransactionsAndSetBalanceAndSubscribeToCommandEntered();
             }
@@ -241,7 +255,7 @@ namespace Eksamensopgave2016
                 ShowActiveProducts();
                 markCurrentPosition();
                 string command = Console.ReadLine();
-                if (CommandEntered != null) CommandEntered.Invoke(command, controller);
+                if (CommandEntered != null) CommandEntered.Invoke(command);
                 Console.ReadKey();
             } while (_running);
         }
@@ -285,6 +299,13 @@ namespace Eksamensopgave2016
         {
             Console.WriteLine($"The command '{adminCommand}' is not a valid admin command");
         }
+
+        public void DisplayUserGetsCredits(InsertCashTransaction transaction)
+        {
+            Console.WriteLine($"Insert of {transaction.Amount}Kr to {transaction.Client.Firstname} completed..\n" +
+                              $" New balance:{transaction.BalanceAfterTransaction}");
+        }
+
         public void DisplayUserBuysProduct(BuyTransaction transaction)
         {
             Console.WriteLine($"{transaction.Client} buys {transaction.Item.Name} for {transaction.Item.Price}Kr");

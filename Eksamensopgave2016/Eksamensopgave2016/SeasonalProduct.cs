@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     class SeasonalProduct : Product

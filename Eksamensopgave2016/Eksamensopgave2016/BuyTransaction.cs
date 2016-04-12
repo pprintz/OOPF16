@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Eksamensopgave2016
+﻿namespace Eksamensopgave2016
 {
     public class BuyTransaction : Transaction
     {
@@ -30,7 +24,7 @@ namespace Eksamensopgave2016
             {
                 throw new ProductNotActiveException(Item);
             }
-            if (Client.Balance < Amount && !Item.CanBeBoughtOnCredit)
+            if (Client.Balance <= Amount && !Item.CanBeBoughtOnCredit)
             {
                 throw new InsufficientCreditsException(Client, Item);
             }

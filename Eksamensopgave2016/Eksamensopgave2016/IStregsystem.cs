@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     public interface IStregsystem

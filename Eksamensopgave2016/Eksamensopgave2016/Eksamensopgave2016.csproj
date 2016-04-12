@@ -80,7 +80,7 @@
     <Content Include="Resources\products.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <Content Include="Resources\TransactionLogfile.csv" />
   </ItemGroup>

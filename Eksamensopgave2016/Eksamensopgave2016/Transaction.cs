@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     public abstract class Transaction
@@ -18,7 +18,7 @@ namespace Eksamensopgave2016
 
 
         public int TransactionID { get; set; } = GlobalTransactionCounter;
-        public User Client { get; set; }
+        public User Client { get;}
         public DateTime Date { get; set; }
         public decimal BalanceAfterTransaction { get; set; }
         public decimal Amount { get; set; }

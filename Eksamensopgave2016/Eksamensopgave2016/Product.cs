@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     public class Product
@@ -26,11 +25,11 @@ namespace Eksamensopgave2016
             }
             set
             {
-                if (value == null)
+                _name = "..";
+                if (value != null)
                 {
-                    throw new ArgumentException("Name can't be null");
+                    _name = value;
                 }
-                _name = value;
             }
         }
 

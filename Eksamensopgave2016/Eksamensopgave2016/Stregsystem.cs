@@ -3,18 +3,16 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     public class Stregsystem : IStregsystem
     {
-        public Stregsystem()
-        {
-           
-        }
-        
-        public delegate void StregsystemEvent(string commandEntered, StregsystemController controller);
-
+        public delegate void StregsystemEvent(string commandEntered);
 
         public event User.UserBalanceNotification UserBalanceWarning;
         public List<User> Users { get; set; } = new List<User>();

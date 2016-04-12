@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     public class StregsystemController
@@ -13,6 +15,11 @@ namespace Eksamensopgave2016
             UI = ui;
             Stregsystem = stregsystem;
             LoadAdminCommands();
+            UI.CommandEntered += ParseEnteredCommandAndWriteStuff;
+        }
+        public void ParseEnteredCommandAndWriteStuff(string commandEntered)
+        {
+            ParseCommand(commandEntered);
         }
         // Dictionary with the different adminCommands, takes a string as key ":activate" examp, and takes a delegate as value, with form of an action.
         private readonly Dictionary<string, AdminFunction> _adminCommands = new Dictionary<string, AdminFunction>();
@@ -51,7 +58,7 @@ namespace Eksamensopgave2016
         public void ParseCommand(string command)
         {
             string[] commands = command.Split(' ');
-            if (command.Length == 0)
+            if (command.All(char.IsWhiteSpace) || command.First() == ' ')
             {
                 UI.DisplayGeneralError("Please type a command. type ':help' for help");
             }
@@ -111,7 +118,6 @@ namespace Eksamensopgave2016
                 UI.DisplayTooManyArgumentsError(command);
             }
         }
-
         //Checks if input corresponds to a valid admincommand.
         //catches IndexOutOfrangeException if user dont gives the right amount of arguments to the functions
         //Throws it again as Customized exception. Gets handled in main.
@@ -141,15 +147,39 @@ namespace Eksamensopgave2016
             _adminCommands.Add(":quit", UI.Close);
             _adminCommands.Add(":activate", () =>
             {
-                CheckProductIDInput(_inputAdmCommands[1]).Active = true;
+                Product p = CheckProductIDInput(_inputAdmCommands[1]);
+                if (p != null)
+                {
+                    p.Active = true;
+                }
             });
-
-            _adminCommands.Add(":deactivate", () => CheckProductIDInput(_inputAdmCommands[1]).Active = false);
-            _adminCommands.Add(":crediton", () => CheckProductIDInput(_inputAdmCommands[1]).CanBeBoughtOnCredit = true);
-            _adminCommands.Add(":creditoff", () => CheckProductIDInput(_inputAdmCommands[1]).CanBeBoughtOnCredit = false);
-            _adminCommands.Add(":addcredits", () => Stregsystem.AddCreditsToAccount(
+            _adminCommands.Add(":deactivate", () =>
+            {
+                Product p = CheckProductIDInput(_inputAdmCommands[1]);
+                if (p != null)
+                {
+                    p.Active = false;
+                }
+            });
+            _adminCommands.Add(":crediton", () =>
+            {
+                Product p = CheckProductIDInput(_inputAdmCommands[1]);
+                if (p != null)
+                {
+                    p.CanBeBoughtOnCredit = true;
+                }
+            });
+            _adminCommands.Add(":creditoff", () =>
+            {
+                Product p = CheckProductIDInput(_inputAdmCommands[1]);
+                if (p != null)
+                {
+                    p.CanBeBoughtOnCredit = false;
+                }
+            });
+            _adminCommands.Add(":addcredits", () => UI.DisplayUserGetsCredits(Stregsystem.AddCreditsToAccount(
                                                      CheckUsernameInput(_inputAdmCommands[1])
-                                                     , decimal.Parse(_inputAdmCommands[2])));
+                                                     , decimal.Parse(_inputAdmCommands[2]))));
             _adminCommands.Add(":makeuser", UI.MakeUser);
             _adminCommands.Add(":help", UI.DisplayCommands);
             _adminCommands.Add(":show", UI.ShowAllInactiveProducts);

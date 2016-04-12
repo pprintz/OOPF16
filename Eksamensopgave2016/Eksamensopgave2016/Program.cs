@@ -1,14 +1,10 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.UI.WebControls.WebParts;
-
-/*20121234_Peter_Aage_Nielsen*/
-
+using System.IO;
+/// <summary>
+/// 20135332
+/// Peter Viggo Printz Madsen
+/// Eksamens opgave OOP F16
+/// </summary>
 namespace Eksamensopgave2016
 {
     class Program
@@ -21,7 +17,7 @@ namespace Eksamensopgave2016
             do
                 try
                 {
-                    ui.Start(sc);
+                    ui.Start();
                 }
                 catch (UserDoesNotExistException userException)
                 {
@@ -33,7 +29,8 @@ namespace Eksamensopgave2016
                 }
                 catch (InsufficientCreditsException insufficientCreditsException)
                 {
-                    ui.DisplayInsufficientCash(insufficientCreditsException.Client, insufficientCreditsException.Message);
+                    ui.DisplayInsufficientCash(insufficientCreditsException.Client,
+                        insufficientCreditsException.Message);
                 }
                 catch (ProductNotActiveException productNotActiveException)
                 {
@@ -42,7 +39,12 @@ namespace Eksamensopgave2016
                 }
                 catch (TooFewArgumentsForAdminFuncException tooFewArgumentsForAdminFuncException)
                 {
-                    ui.DisplayGeneralError("Not enough arguments for : " + tooFewArgumentsForAdminFuncException.AdminFuncName);
+                    ui.DisplayGeneralError("Not enough arguments for  " + "'" +
+                                           tooFewArgumentsForAdminFuncException.AdminFuncName + "'");
+                }
+                catch (FileNotFoundException fileNotFoundException)
+                {
+                    using (StreamWriter w = File.AppendText(fileNotFoundException.FileName)) ;
                 }
                 finally
                 {
