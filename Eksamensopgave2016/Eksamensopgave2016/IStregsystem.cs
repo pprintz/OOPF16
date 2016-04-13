@@ -21,5 +21,6 @@ namespace Eksamensopgave2016
         IEnumerable<Transaction> GetTransactions(User user, int count);
         User GetUser(Func<User, bool> predicate);
         User GetUserByUsername(string username);
+        void LoadUsersAndTransactionsAndSetBalanceAndSubscribeToCommandEntered();
     }
 }

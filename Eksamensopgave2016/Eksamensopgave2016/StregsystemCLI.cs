@@ -122,84 +122,6 @@ namespace Eksamensopgave2016
             File.AppendAllText(Environment.CurrentDirectory + "/Resources/Userlist.csv", sb.ToString());
             _stregsystem.Users.Add(newUser);
         }
-
-        //Reads users from Userlist.csv, and adds them to the user list.
-        private void LoadUsers()
-        {
-            StreamReader userlistStreamReader = new StreamReader(Environment.CurrentDirectory + @"\Resources\Userlist.csv");
-            string lineBuffer;
-            while ((lineBuffer = userlistStreamReader.ReadLine()) != null)
-            {
-                string[] subStrings = lineBuffer.Split(',');
-                User user = new User(subStrings[0], subStrings[1], subStrings[2], subStrings[3]);
-                _stregsystem.Users.Add(user);
-
-            }
-            if (_stregsystem.Users.Count > 0)
-            {
-                User.GlobalUserCounter = _stregsystem.Users.Max(u => u.UserID);
-            }
-            userlistStreamReader.Close();
-        }
-        //Reads TransactionLogfile.csv and adds them to transaction list.
-        private IEnumerable<Transaction> LoadTransactions()
-        {
-            StreamReader reader = new StreamReader(Environment.CurrentDirectory + @"\Resources\TransactionLogfile.csv");
-            List<Transaction> transactions = new List<Transaction>();
-            string lineBuffer;
-            while ((lineBuffer = reader.ReadLine()) != null)
-            {
-                Transaction transaction = null;
-
-                string[] subStrings = lineBuffer.Split(';');
-                //Reads all the InsertCashTransactions
-                if (subStrings[0].Contains("InsertCash"))
-                {
-                    string[] dateStrings = subStrings[4].Split('-');
-                    transaction = new InsertCashTransaction(_stregsystem.GetUserByUsername(subStrings[1]),
-                                                            decimal.Parse(subStrings[2]))
-                    {
-                        Date = new DateTime(int.Parse(dateStrings[2]),
-                        int.Parse(dateStrings[1]),
-                        int.Parse(dateStrings[0]), int.Parse(dateStrings[3]), int.Parse(dateStrings[4]), int.Parse(dateStrings[5])),
-                        BalanceAfterTransaction = decimal.Parse(subStrings[5])
-                    };
-                }
-                //Reads all the BuyTransactions
-                else
-                {
-                    string[] dateStrings = subStrings[5].Split('-');
-                    transaction = new BuyTransaction(_stregsystem.GetUserByUsername(subStrings[1]),
-                                                     _stregsystem.GetProductByID(int.Parse(subStrings[2])))
-                    {
-                        ProductPriceAtTransaction = decimal.Parse(subStrings[3]),
-                        Date = new DateTime(int.Parse(dateStrings[2]),
-                        int.Parse(dateStrings[1]),
-                        int.Parse(dateStrings[0]), int.Parse(dateStrings[3]), int.Parse(dateStrings[4]), int.Parse(dateStrings[5])),
-                        BalanceAfterTransaction = decimal.Parse(subStrings[6])
-                    };
-                }
-                //Adds every BuyTransaction/InsertCashTransactions to the list
-                transactions.Add(transaction);
-            }
-            reader.Close();
-            return transactions;
-        }
-        //Reads the list of transactions, sets the balance to latest balance
-        private void SetBalanceOfUsers()
-        {
-            var ts = _stregsystem.Transactions.OrderByDescending(t => t.TransactionID);
-            foreach (Transaction transaction in ts)
-            {
-                User user = _stregsystem.GetUserByUsername(transaction.Client.Username);
-                if (!user.IsLoaded)
-                {
-                    user.Balance = transaction.BalanceAfterTransaction;
-                    user.IsLoaded = true;
-                }
-            }
-        }
-
         public void ShowAllInactiveProducts()
         {
             foreach (Product product in _stregsystem.Products.Values.Where(p => p.Active == false))
@@ -214,20 +136,6 @@ namespace Eksamensopgave2016
                 Console.WriteLine(activeProduct);
             }
         }
-
-        private void LoadUsersAndTransactionsAndSetBalanceAndSubscribeToCommandEntered()
-        {
-            _stregsystem.UserBalanceWarning += NotifyUserThatBalanceIsLow;
-            LoadUsers();
-            //Wont load transactions if there is no users, there is a user behind every transaction.
-            if (_stregsystem.Users.Count != 0)
-            {
-                _stregsystem.Transactions = LoadTransactions().ToList();
-            }
-            SetBalanceOfUsers();
-            _firstTime = false;
-        }
-
         static bool _firstTime = true;
         // When start is called, users and transactions are loaded from csv file.
         // Users last known balance are found by looking at their latest transaction
@@ -239,7 +147,9 @@ namespace Eksamensopgave2016
         {
             if (_firstTime)
             {
-                LoadUsersAndTransactionsAndSetBalanceAndSubscribeToCommandEntered();
+                _stregsystem.UserBalanceWarning += NotifyUserThatBalanceIsLow;
+                _stregsystem.LoadUsersAndTransactionsAndSetBalanceAndSubscribeToCommandEntered();
+                _firstTime = false;
             }
             if (_stregsystem.Users.Count == 0)
             {
@@ -290,7 +200,6 @@ namespace Eksamensopgave2016
                 Console.BackgroundColor = ConsoleColor.Black;
             }
         }
-
         public void DisplayTooManyArgumentsError(string command)
         {
             Console.WriteLine("Too many arguments... Try with one(Username) or two(Username productID)");

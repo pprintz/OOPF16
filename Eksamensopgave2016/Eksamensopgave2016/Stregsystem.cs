@@ -115,5 +115,91 @@ namespace Eksamensopgave2016
             }
             throw new UserDoesNotExistException(username);
         }
+        //Reads users from Userlist.csv, and adds them to the user list.
+        private void LoadUsers()
+        {
+            StreamReader userlistStreamReader = new StreamReader(Environment.CurrentDirectory + @"\Resources\Userlist.csv");
+            string lineBuffer;
+            while ((lineBuffer = userlistStreamReader.ReadLine()) != null)
+            {
+                string[] subStrings = lineBuffer.Split(',');
+                User user = new User(subStrings[0], subStrings[1], subStrings[2], subStrings[3]);
+                Users.Add(user);
+
+            }
+            if (Users.Count > 0)
+            {
+                User.GlobalUserCounter = Users.Max(u => u.UserID);
+            }
+            userlistStreamReader.Close();
+        }
+        //Reads TransactionLogfile.csv and adds them to transaction list.
+        private IEnumerable<Transaction> LoadTransactions()
+        {
+            StreamReader reader = new StreamReader(Environment.CurrentDirectory + @"\Resources\TransactionLogfile.csv");
+            List<Transaction> transactions = new List<Transaction>();
+            string lineBuffer;
+            while ((lineBuffer = reader.ReadLine()) != null)
+            {
+                Transaction transaction = null;
+
+                string[] subStrings = lineBuffer.Split(';');
+                //Reads all the InsertCashTransactions
+                if (subStrings[0].Contains("InsertCash"))
+                {
+                    string[] dateStrings = subStrings[4].Split('-');
+                    transaction = new InsertCashTransaction(GetUserByUsername(subStrings[1]),
+                                                            decimal.Parse(subStrings[2]))
+                    {
+                        Date = new DateTime(int.Parse(dateStrings[2]),
+                        int.Parse(dateStrings[1]),
+                        int.Parse(dateStrings[0]), int.Parse(dateStrings[3]), int.Parse(dateStrings[4]), int.Parse(dateStrings[5])),
+                        BalanceAfterTransaction = decimal.Parse(subStrings[5])
+                    };
+                }
+                //Reads all the BuyTransactions
+                else
+                {
+                    string[] dateStrings = subStrings[5].Split('-');
+                    transaction = new BuyTransaction(GetUserByUsername(subStrings[1]),
+                                                     GetProductByID(int.Parse(subStrings[2])))
+                    {
+                        ProductPriceAtTransaction = decimal.Parse(subStrings[3]),
+                        Date = new DateTime(int.Parse(dateStrings[2]),
+                        int.Parse(dateStrings[1]),
+                        int.Parse(dateStrings[0]), int.Parse(dateStrings[3]), int.Parse(dateStrings[4]), int.Parse(dateStrings[5])),
+                        BalanceAfterTransaction = decimal.Parse(subStrings[6])
+                    };
+                }
+                //Adds every BuyTransaction/InsertCashTransactions to the list
+                transactions.Add(transaction);
+            }
+            reader.Close();
+            return transactions;
+        }
+        //Reads the list of transactions, sets the balance to latest balance
+        private void SetBalanceOfUsers()
+        {
+            var ts = Transactions.OrderByDescending(t => t.TransactionID);
+            foreach (Transaction transaction in ts)
+            {
+                User user = GetUserByUsername(transaction.Client.Username);
+                if (!user.IsLoaded)
+                {
+                    user.Balance = transaction.BalanceAfterTransaction;
+                    user.IsLoaded = true;
+                }
+            }
+        }
+       public void LoadUsersAndTransactionsAndSetBalanceAndSubscribeToCommandEntered()
+        {
+            LoadUsers();
+            //Wont load transactions if there is no users, loading transactions dos
+            if (Users.Count != 0)
+            {
+                Transactions = LoadTransactions().ToList();
+            }
+            SetBalanceOfUsers();
+        }
     }
 }
